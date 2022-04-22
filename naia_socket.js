@@ -9,7 +9,6 @@ const naia_socket = {
     plugin: function (importObject) {
         importObject.env.naia_connect = function (address, rtc_path) { naia_socket.connect(address, rtc_path); };
         importObject.env.naia_send = function (message) { naia_socket.send(message); };
-        importObject.env.naia_resend_dropped_messages = function() { naia_socket.resend_dropped_messages(); };
         importObject.env.naia_create_string = function (buf, max_len) { return naia_socket.js_create_string(buf, max_len); };
         importObject.env.naia_unwrap_to_str = function (js_object, buf, max_len) { naia_socket.js_unwrap_to_str(js_object, buf, max_len); };
         importObject.env.naia_string_length = function (js_object) { return naia_socket.js_string_length(js_object); };
@@ -101,16 +100,6 @@ const naia_socket = {
     send: function (message) {
         let message_string = naia_socket.get_js_object(message);
         this.send_u8_array(message_string);
-    },
-
-    resend_dropped_messages: function () {
-        if (this.channel && this.dropped_outgoing_messages.length > 0) {
-            let temp_array = this.dropped_outgoing_messages;
-            this.dropped_outgoing_messages = [];
-            for (let i = 0; i < temp_array.length; i+=1) {
-                this.send_u8_array(Uint8Array.from(temp_array[i]));
-            }
-        }
     },
 
     send_str: function (str) {

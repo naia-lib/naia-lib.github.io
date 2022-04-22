@@ -1324,7 +1324,7 @@ function init_plugins(plugins) {
         }
         if (plugins[i].name == undefined || plugins[i].name == null ||
             plugins[i].version == undefined || plugins[i].version == null) {
-            console.warn("Some of the registred plugins do not have name or version");
+            console.warn("Some of the registered plugins do not have name or version");
             console.warn("Probably old version of the plugin used");
         } else {
             var version_func = plugins[i].name + "_crate_version";
