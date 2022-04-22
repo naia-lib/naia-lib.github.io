@@ -2,7 +2,6 @@ const naia_socket = {
     channel: null,
     encoder: new TextEncoder(),
     decoder: new TextDecoder("utf-8"),
-    dropped_outgoing_messages: [],
     js_objects: {},
     unique_js_id: 0,
 
@@ -102,21 +101,6 @@ const naia_socket = {
         this.send_u8_array(message_string);
     },
 
-    send_str: function (str) {
-        if (this.channel) {
-            try {
-                this.channel.send(this.encoder.encode(str));
-            }
-            catch(err) {
-                this.error("send_str() error. Adding to re-send queue.", err.message);
-                this.dropped_outgoing_messages.push(str);
-            }
-        }
-        else {
-            this.dropped_outgoing_messages.push(str);
-        }
-    },
-
     js_create_string: function (buf, max_len) {
         let string = UTF8ToString(buf, max_len);
         return this.js_object(string);
@@ -143,12 +127,10 @@ const naia_socket = {
                 this.channel.send(str);
             }
             catch(err) {
-                this.error("send_u8_array() error. Adding to re-send queue.", err.message);
-                this.dropped_outgoing_messages.push(Array.from(str));
+                this.error("error when sending u8 array over datachannel", err.message);
             }
-        }
-        else {
-            this.dropped_outgoing_messages.push(Array.from(str));
+        } else {
+            this.error("error: sending u8 array over uninitialized datachannel");
         }
     },
 
